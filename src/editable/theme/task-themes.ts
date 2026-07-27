@@ -2,13 +2,13 @@ import type { CSSProperties } from 'react'
 import type { TaskKey } from '@/lib/site-config'
 
 /*
-  Yelp-style task surfaces.
+  Task surfaces for the "Paper & Signal" system.
 
-  Every task (archive + detail) now shares one cohesive premium identity:
-  clean white surfaces, the signature Yelp red accent, hairline gray borders
-  and a single crisp sans-serif — exactly like Yelp. Per-task copy (kicker /
-  note) still varies so each section keeps a little voice, but the visual
-  language is unified. Tokens are delivered via CSS variables (`--tk-*`).
+  Every task shares one identity — paper cream ground, white raised cards,
+  hairline warm borders, one electric blue signal accent, geometric display
+  type. Only the per-task voice (kicker / note) changes, so no section ever
+  reads as a different site. Tokens ship as CSS variables (`--tk-*`) so archive
+  + detail layouts stay fully themeable.
 */
 
 export type TaskTheme = {
@@ -32,34 +32,34 @@ export type TaskTheme = {
   radius: string
 }
 
-const YELP_FONT = "'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
+const DISPLAY_FONT = "'Outfit', 'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
+const BODY_FONT = "'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif"
 
-// Shared Yelp palette — every task inherits this; only kicker/note differ.
 const base = {
   dark: false,
-  fontDisplay: YELP_FONT,
-  fontBody: YELP_FONT,
-  bg: '#ffffff',
+  fontDisplay: DISPLAY_FONT,
+  fontBody: BODY_FONT,
+  bg: '#f4f1ea',
   surface: '#ffffff',
-  raised: '#f7f7f7',
-  text: '#1a1a1a',
-  muted: '#6b6b6b',
-  line: '#e6e6e6',
-  accent: '#d32323',
-  accentSoft: '#fdecec',
+  raised: '#ebe7dd',
+  text: '#15171f',
+  muted: '#5b6070',
+  line: '#e1dcd1',
+  accent: '#2c4ce0',
+  accentSoft: '#e8ecff',
   onAccent: '#ffffff',
-  glow: 'rgba(211,35,35,0.06)',
-  radius: '0.75rem',
+  glow: 'rgba(44,76,224,0.10)',
+  radius: '1.5rem',
 } satisfies Omit<TaskTheme, 'kicker' | 'note'>
 
 export const taskThemes: Record<TaskKey, TaskTheme> = {
-  article: { ...base, kicker: 'Articles', note: 'In-depth reads, guides and stories worth your time.' },
-  listing: { ...base, kicker: 'Businesses', note: 'Find, compare and connect with local businesses.' },
-  classified: { ...base, kicker: 'Marketplace', note: 'Fresh offers and listings, ready to act on.' },
-  image: { ...base, kicker: 'Photos', note: 'A visual feed of standout images and galleries.' },
-  sbm: { ...base, kicker: 'Bookmarks', note: 'Curated resources and links worth saving.' },
-  pdf: { ...base, kicker: 'Documents', note: 'Downloadable guides, reports and references.' },
-  profile: { ...base, kicker: 'People', note: 'Discover creators, businesses and profiles.' },
+  article: { ...base, kicker: 'Reading', note: 'Long-form pieces, guides and reference writing worth the time.' },
+  listing: { ...base, kicker: 'Directory', note: 'Organisations and services, arranged so they can be compared quickly.' },
+  classified: { ...base, kicker: 'Marketplace', note: 'Current offers and openings, written to be acted on the same day.' },
+  image: { ...base, kicker: 'Gallery', note: 'A visual index where the image leads and the caption follows.' },
+  sbm: { ...base, kicker: 'Collections', note: 'Saved references, shelved by theme so they stay findable.' },
+  pdf: { ...base, kicker: 'Library', note: 'Downloadable reports, guides and documents in one place.' },
+  profile: { ...base, kicker: 'People', note: 'The people and organisations behind the work, with the context that matters.' },
 }
 
 export function getTaskTheme(task: TaskKey): TaskTheme {
