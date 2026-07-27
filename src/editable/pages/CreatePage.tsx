@@ -2,13 +2,11 @@
 
 import { FormEvent, useMemo, useState } from 'react'
 import Link from 'next/link'
-import {
-  ArrowRight, Bookmark, Building2, CheckCircle2, FileText, Image as ImageIcon, Lock,
-  Megaphone, MoveUpRight, Send, UserRound,
-} from 'lucide-react'
-import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
+import { ArrowRight, CheckCircle2, Lock, MoveUpRight, Send } from 'lucide-react'
+import { type TaskKey } from '@/lib/site-config'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { useEditableLocalAuthSession } from '@/editable/components/EditableLocalAuthForms'
+import { getVisibleTaskLinks } from '@/editable/content/global.content'
 import { pagesContent } from '@/editable/content/pages.content'
 
 type DraftPost = {
@@ -25,16 +23,6 @@ type DraftPost = {
 
 const STORE_KEY = 'slot4:created-posts'
 
-const taskIcon: Record<string, typeof FileText> = {
-  article: FileText,
-  listing: Building2,
-  classified: Megaphone,
-  image: ImageIcon,
-  profile: UserRound,
-  pdf: FileText,
-  sbm: Bookmark,
-}
-
 const fieldClass =
   'w-full rounded-[1.15rem] border border-[var(--editable-border)] bg-[var(--slot4-page-bg)] px-5 py-3.5 text-sm text-[var(--slot4-page-text)] outline-none transition duration-300 placeholder:text-[var(--slot4-soft-muted-text)] focus:border-[var(--slot4-accent)] focus:bg-[var(--slot4-surface-bg)]'
 
@@ -50,8 +38,10 @@ const saveDraft = (draft: DraftPost) => {
 
 export default function CreatePage() {
   const { session } = useEditableLocalAuthSession()
-  const enabledTasks = useMemo(() => SITE_CONFIG.tasks.filter((task) => task.enabled), [])
-  const [task, setTask] = useState<TaskKey>((enabledTasks[0]?.key || 'article') as TaskKey)
+  // Mirrors the sections the site links to, so a draft never targets a section
+  // that is hidden everywhere else.
+  const enabledTasks = useMemo(() => getVisibleTaskLinks(), [])
+  const task = (enabledTasks[0]?.key || 'article') as TaskKey
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('')
   const [summary, setSummary] = useState('')
@@ -136,31 +126,21 @@ export default function CreatePage() {
                 {pagesContent.create.hero.description}
               </p>
 
-              <p className="pm-mono mt-10 text-[var(--slot4-soft-muted-text)]">Choose a section</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {enabledTasks.map((item) => {
-                  const Icon = taskIcon[item.key] || FileText
-                  const active = item.key === task
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      onClick={() => setTask(item.key)}
-                      aria-pressed={active}
-                      className={`rounded-[1.15rem] border p-5 text-left transition duration-300 ${
-                        active
-                          ? 'border-transparent bg-[var(--slot4-page-text)] text-white shadow-[0_18px_44px_rgba(18,22,44,0.18)]'
-                          : 'border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] hover:-translate-y-1 hover:border-[var(--slot4-page-text)]'
-                      }`}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span className="editable-display mt-3 block text-[1.05rem] font-semibold">{item.label}</span>
-                      <span className={`mt-1 block text-xs leading-5 ${active ? 'text-white/60' : 'text-[var(--slot4-muted-text)]'}`}>
-                        {item.description}
-                      </span>
-                    </button>
-                  )
-                })}
+              <div className="mt-10 rounded-[var(--pm-radius)] border border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] p-6">
+                <p className="pm-mono text-[var(--slot4-soft-muted-text)]">Before you save</p>
+                <ul className="mt-5 grid gap-3.5">
+                  {[
+                    'Lead with a title that reads well on its own.',
+                    'Keep the summary to a sentence or two — it is what shows on cards.',
+                    'A featured image makes the post carry across the whole site.',
+                    'Drafts stay on this device until they are submitted.',
+                  ].map((tip) => (
+                    <li key={tip} className="flex gap-3 text-sm leading-6 text-[var(--slot4-muted-text)]">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--slot4-accent)]" />
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </aside>
 
