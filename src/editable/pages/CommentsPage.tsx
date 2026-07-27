@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { MessageSquare, Search } from 'lucide-react'
+import { ArrowUpRight, MessageSquare, RefreshCw, Search } from 'lucide-react'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 
 type StoredComment = {
@@ -74,11 +74,11 @@ export default function CommentsPage() {
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase()
     if (!term) return comments
-    return comments.filter((item) => {
-      return [item.name, item.email, item.comment, item.articleTitle, item.articleSlug]
+    return comments.filter((item) =>
+      [item.name, item.email, item.comment, item.articleTitle, item.articleSlug]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(term))
-    })
+    )
   }, [comments, query])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / COMMENTS_PER_PAGE))
@@ -92,76 +92,115 @@ export default function CommentsPage() {
 
   return (
     <EditableSiteShell>
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <section className="rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                <MessageSquare className="h-4 w-4" /> Local comments
+      <main className="min-h-screen bg-[var(--slot4-page-bg)] text-[var(--slot4-page-text)]">
+        <section className="mx-auto w-full max-w-5xl px-5 py-14 sm:px-6 sm:py-20 lg:px-8">
+          <div className="flex flex-col gap-6 border-b border-[var(--editable-border)] pb-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0">
+              <p className="pm-mono pm-marker text-[var(--slot4-accent)]">
+                <MessageSquare className="mr-1 inline h-3.5 w-3.5 align-[-2px]" /> On this device
               </p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Comments</h1>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-                Review comments saved in this browser from article pages.
+              <h1 className="pm-display mt-5 text-[2.2rem] sm:text-[3rem]">
+                Your <span className="pm-strong">comments.</span>
+              </h1>
+              <p className="mt-4 max-w-xl text-base leading-[1.8] text-[var(--slot4-muted-text)]">
+                Everything you have posted from a detail page, kept locally in this browser.
               </p>
             </div>
-            <button type="button" className="rounded-full border border-[var(--editable-border)] px-4 py-2 text-sm font-black" onClick={refreshComments}>Refresh comments</button>
+            <button
+              type="button"
+              onClick={refreshComments}
+              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--editable-border)] px-5 py-2.5 text-sm font-semibold transition duration-300 hover:border-[var(--slot4-page-text)]"
+            >
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </button>
           </div>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative w-full sm:max-w-md">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <label className="flex w-full min-w-0 items-center gap-2.5 rounded-full border border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] px-5 py-3 sm:max-w-md">
+              <Search className="h-4 w-4 shrink-0 text-[var(--slot4-accent)]" />
               <input
                 value={query}
                 onChange={(event) => {
                   setQuery(event.target.value)
                   setPage(1)
                 }}
-                placeholder="Search comments..."
-                className="h-11 w-full rounded-2xl border border-[var(--editable-border)] bg-white pl-9 pr-3 text-sm outline-none"
+                placeholder="Search your comments"
+                className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--slot4-soft-muted-text)]"
               />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {filtered.length} comment{filtered.length === 1 ? '' : 's'} found
+            </label>
+            <p className="pm-mono text-[var(--slot4-soft-muted-text)]">
+              {filtered.length} {filtered.length === 1 ? 'comment' : 'comments'}
             </p>
           </div>
-        </section>
 
-        {visibleComments.length ? (
-          <section className="mt-8 grid gap-4">
-            {visibleComments.map((item) => (
-              <article key={`${item.articleSlug}-${item.id}`} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="font-semibold text-foreground">{item.name}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{formatDate(item.createdAt)}</p>
+          {visibleComments.length ? (
+            <div className="mt-8 grid gap-4">
+              {visibleComments.map((item) => (
+                <article
+                  key={`${item.articleSlug}-${item.id}`}
+                  className="rounded-[var(--pm-radius)] border border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] p-6 transition duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(18,22,44,0.1)]"
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--slot4-accent-soft)] text-sm font-semibold text-[var(--slot4-accent)]">
+                        {(item.name.trim()[0] || 'G').toUpperCase()}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">{item.name}</p>
+                        <p className="pm-mono mt-0.5 text-[var(--slot4-soft-muted-text)]">{formatDate(item.createdAt)}</p>
+                      </div>
+                    </div>
+                    {item.articleSlug ? (
+                      <Link
+                        href={`/article/${item.articleSlug}`}
+                        className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-[var(--slot4-accent)]"
+                      >
+                        <span className="pm-link">Open post</span>
+                        <ArrowUpRight className="h-3.5 w-3.5 transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                      </Link>
+                    ) : null}
                   </div>
-                  {item.articleSlug ? (
-                    <Link href={`/article/${item.articleSlug}`} className="text-sm text-primary underline-offset-4 hover:underline">
-                      Open article
-                    </Link>
-                  ) : null}
-                </div>
-                {item.articleTitle ? <p className="mt-4 text-sm font-medium text-foreground">{item.articleTitle}</p> : null}
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">{item.comment}</p>
-              </article>
-            ))}
-          </section>
-        ) : (
-          <section className="mt-8 rounded-2xl border border-dashed border-border bg-card/70 p-8 text-center">
-            <h2 className="text-xl font-semibold text-foreground">No comments yet</h2>
-            <p className="mt-2 text-sm text-muted-foreground">Add a comment on any article page and it will appear here.</p>
-          </section>
-        )}
-
-        {filtered.length > COMMENTS_PER_PAGE ? (
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-sm text-muted-foreground">
-            <span>Page {currentPage} of {totalPages}</span>
-            <div className="flex gap-2">
-              <button type="button" className="rounded-full border border-[var(--editable-border)] px-4 py-2 font-black disabled:opacity-40" disabled={currentPage <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</button>
-              <button type="button" className="rounded-full border border-[var(--editable-border)] px-4 py-2 font-black disabled:opacity-40" disabled={currentPage >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))}>Next</button>
+                  {item.articleTitle ? <p className="editable-display mt-5 text-[1.05rem] font-semibold">{item.articleTitle}</p> : null}
+                  <p className="mt-3 whitespace-pre-line text-sm leading-7 text-[var(--slot4-muted-text)]">{item.comment}</p>
+                </article>
+              ))}
             </div>
-          </div>
-        ) : null}
+          ) : (
+            <div className="mt-10 rounded-[var(--pm-radius)] border border-dashed border-[var(--editable-border)] bg-[var(--slot4-surface-bg)] px-8 py-16 text-center">
+              <MessageSquare className="mx-auto h-7 w-7 text-[var(--slot4-soft-muted-text)]" />
+              <h2 className="pm-display mt-5 text-[1.6rem]">No comments yet</h2>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--slot4-muted-text)]">
+                Add a comment on any detail page and it will show up here.
+              </p>
+            </div>
+          )}
+
+          {filtered.length > COMMENTS_PER_PAGE ? (
+            <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--editable-border)] pt-6">
+              <p className="pm-mono text-[var(--slot4-soft-muted-text)]">
+                Page {currentPage} of {totalPages}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded-full border border-[var(--editable-border)] px-5 py-2.5 text-sm font-semibold transition disabled:opacity-40"
+                  disabled={currentPage <= 1}
+                  onClick={() => setPage((value) => Math.max(1, value - 1))}
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  className="rounded-full border border-[var(--editable-border)] px-5 py-2.5 text-sm font-semibold transition disabled:opacity-40"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </section>
       </main>
     </EditableSiteShell>
   )
