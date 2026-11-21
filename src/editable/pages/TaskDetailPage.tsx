@@ -110,13 +110,9 @@ const leadText = (post: SitePost) => {
   return lead && lead !== stripHtml(getBody(post)) ? lead : ''
 }
 const categoryOf = (post: SitePost, fallback: string) => asText(getContent(post).category) || post.tags?.[0] || fallback
-const dateOf = (post: SitePost) => {
-  const raw = post.publishedAt || post.createdAt || ''
-  if (!raw) return ''
-  const time = new Date(raw).getTime()
-  if (Number.isNaN(time)) return ''
-  return new Date(time).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })
-}
+// This site does not show a publish date on post pages. Its only caller builds a meta line
+// with `.filter(Boolean)`, so returning '' drops the date and leaves the separators correct.
+const dateOf = (_post: SitePost) => ''
 const readTimeOf = (post: SitePost) => {
   const words = stripHtml(getBody(post)).split(' ').filter(Boolean).length
   return words > 40 ? `${Math.max(1, Math.round(words / 200))} min read` : ''
